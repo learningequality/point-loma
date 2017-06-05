@@ -56,16 +56,16 @@ def cli(link, count, output_file):
 			timeToInteractive = d["audits"]["time-to-interactive"]["rawValue"]
 
 			# check for non numeric values before adding to average
-			if [isinstance(firstMeaningfulPaint, numbers.Number)]:
+			if [isinstance(firstMeaningfulPaint, numbers.Number)] or firstMeaningfulPaint.isdigit():
 				fmp_avg = fmp_avg + firstMeaningfulPaint
 
-			if [isinstance(speedIndex, numbers.Number)]:
+			if [isinstance(speedIndex, numbers.Number)] or speedIndex.isdigit():
 				si_avg = si_avg + speedIndex
 
-			if [isinstance(estimatedInputLatency, numbers.Number)]:
+			if [isinstance(estimatedInputLatency, numbers.Number)] or estimatedInputLatency.isdigit():
 				eil_avg = eil_avg + estimatedInputLatency
 
-			if [isinstance(timeToInteractive, numbers.Number)]:
+			if [isinstance(timeToInteractive, numbers.Number)] or timeToInteractive.isdigit():
 				tti_avg = tti_avg + timeToInteractive
 
 			# rows hardcoded for now
