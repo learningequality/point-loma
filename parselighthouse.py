@@ -4,8 +4,8 @@ import json, csv
 # import os.path
 from pathlib import Path
 
-#def parseLighthouse():
-count = 3
+#def parseLighthouse(count):
+count = 10
 for x in range(count):
 	y = x + 1
 	filename = "./results{0}.json".format(y)
@@ -25,7 +25,6 @@ for x in range(count):
 		data3 =	["Speed Index", speedIndex]
 		data4 =	["Estimated Input Latency", estimatedInputLatency]
 		data5 =	["Time to Interactive", timeToInteractive]
-		#footer = ["***************************", ""]
 		newLine = ["", ""]
 
 		#output = "./output{0}.csv".format(y)
@@ -44,5 +43,4 @@ for x in range(count):
 			wr.writerow(data3)
 			wr.writerow(data4)
 			wr.writerow(data5)
-			#wr.writerow(footer)
 			wr.writerow(newLine)
