@@ -38,7 +38,7 @@ def cli(link, count, output_file):
 		filename = "./results{0}.json".format(y)
 		sh.lighthouse(link, "--output", "json", "--output-path", filename, "--chrome-flags=", "--headless")
 
-		click.echo("Export results for test {0} to csv file...".format(y))
+		click.echo("Exporting results for test {0} to csv file...".format(y))
 
 		with open(filename) as json_data:
 			d = json.load(json_data)
