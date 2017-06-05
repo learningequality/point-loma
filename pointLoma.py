@@ -8,6 +8,7 @@ import numbers
 #@click.option('--headless', '-hl', default=True, is_flag=True, help='Run in headless mode')
 @click.option('--count', default=1, help='Number of tests to run. Default is 1.')
 @click.option('--output-file', default='output', help='Name of csv file w/o extension. Default is "output".')
+#@click.option('--html', default=False, is_flag=True, help='Generate full HTML reports')
 @click.argument('link')
 
 def cli(link, count, output_file):
@@ -19,7 +20,7 @@ def cli(link, count, output_file):
 	outputPath = Path(output_file+'.csv')
 	if outputPath.is_file():
 		if output_file != output:
-			confirmMessage = 'File {0}already exists. Proceeding will overwrite existing file. \nContinue?'.format(output_file+'.csv')
+			confirmMessage = 'File {0} already exists. Proceeding will overwrite existing file. \nContinue?'.format(output_file+'.csv')
 		else:
 			confirmMessage = 'Default file already exists. Proceeding will overwrite existing file. \nContinue?'
 		
@@ -40,7 +41,7 @@ def cli(link, count, output_file):
 		click.echo("Running lighthouse...")
 
 		filename = "./results{0}.json".format(y)
-		sh.lighthouse(link, "--output", "json", "--output-path", filename, "--output", "html", "--chrome-flags=", "--headless")
+		sh.lighthouse(link, "--output", "json", "--output-path", filename)
 
 		click.echo("Exporting results for test {0} to csv file...".format(y))
 
@@ -68,7 +69,11 @@ def cli(link, count, output_file):
 				tti_avg = tti_avg + timeToInteractive
 
 			# rows hardcoded for now
-			header = ["********* Test {0} *********".format(y), ""]
+			if count == 1:
+				header = ["********* Test {0} *********".format(y), "{0}".format(link)]
+			else:
+				header = ["********* Test {0} *********".format(y), ""]
+
 			data1 =	["Timestamp", timestamp]
 			data2 =	["First Meaningful Paint", firstMeaningfulPaint]
 			data3 =	["Speed Index", speedIndex]
@@ -112,7 +117,7 @@ def cli(link, count, output_file):
 			eil_avg = eil_avg/count
 			tti_avg = tti_avg/count
 
-			header = ["********* Average {0} Tests *********".format(y), ""]
+			header = ["********* Average {0} Tests *********".format(y), "{0}".format(link)]
 			#data1 =	["Timestamp", timestamp]
 			data2 =	["First Meaningful Paint", fmp_avg]
 			data3 =	["Speed Index", si_avg]
