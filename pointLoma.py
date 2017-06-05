@@ -6,8 +6,8 @@ import numbers
 
 @click.command()
 #@click.option('--headless', '-hl', default=True, is_flag=True, help='Run in headless mode')
-@click.option('--count', default=1, help='Number of tests to run')
-@click.option('--output-file', default='output', help='Name of csv output file without extension')
+@click.option('--count', default=1, help='Number of tests to run. Default is 1.')
+@click.option('--output-file', default='output', help='Name of csv file w/o extension. Default is "output".')
 @click.argument('link')
 
 def cli(link, count, output_file):
@@ -16,12 +16,16 @@ def cli(link, count, output_file):
 
 	click.echo("******** Start Point Loma ********")
 
-	outputPath = Path(output+'.csv')
-	if outputPath.is_file(): # and output_file != output
-		if (click.confirm('File already exists. Proceeding will overwrite existing file. \nContinue?')) == False:
+	outputPath = Path(output_file+'.csv')
+	if outputPath.is_file():
+		if output_file != output:
+			confirmMessage = 'File {0}already exists. Proceeding will overwrite existing file. \nContinue?'.format(output_file+'.csv')
+		else:
+			confirmMessage = 'Default file already exists. Proceeding will overwrite existing file. \nContinue?'
+		
+		if (click.confirm(confirmMessage)) == False:
 			click.echo("******** Quitting Point Loma ********")
 			return;
-
 
 	click.echo("Running lighthouse on '{0}'".format(link))
 
@@ -36,7 +40,7 @@ def cli(link, count, output_file):
 		click.echo("Running lighthouse...")
 
 		filename = "./results{0}.json".format(y)
-		sh.lighthouse(link, "--output", "json", "--output-path", filename, "--chrome-flags=", "--headless")
+		sh.lighthouse(link, "--output", "json", "--output-path", filename, "--output", "html", "--chrome-flags=", "--headless")
 
 		click.echo("Exporting results for test {0} to csv file...".format(y))
 
@@ -96,32 +100,32 @@ def cli(link, count, output_file):
 				wr.writerow(data5)
 				wr.writerow(newLine)
 
+	if count != 1:
+		# append averages to end of file
+		read_mode = 'a'
 
-	# append averages to end of file
-	read_mode = 'a'
+		with open(output, read_mode) as csvfile:
+			wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
+			
+			fmp_avg = fmp_avg/count
+			si_avg = si_avg/count
+			eil_avg = eil_avg/count
+			tti_avg = tti_avg/count
 
-	with open(output, read_mode) as csvfile:
-		wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
-		
-		fmp_avg = fmp_avg/count
-		si_avg = si_avg/count
-		eil_avg = eil_avg/count
-		tti_avg = tti_avg/count
+			header = ["********* Average {0} Tests *********".format(y), ""]
+			#data1 =	["Timestamp", timestamp]
+			data2 =	["First Meaningful Paint", fmp_avg]
+			data3 =	["Speed Index", si_avg]
+			data4 =	["Estimated Input Latency", eil_avg]
+			data5 =	["Time to Interactive", tti_avg]
+			newLine = ["", ""]
 
-		header = ["********* Average {0} Tests *********".format(y), ""]
-		#data1 =	["Timestamp", timestamp]
-		data2 =	["First Meaningful Paint", fmp_avg]
-		data3 =	["Speed Index", si_avg]
-		data4 =	["Estimated Input Latency", eil_avg]
-		data5 =	["Time to Interactive", tti_avg]
-		newLine = ["", ""]
-
-		wr.writerow(header)
-		#wr.writerow(data1)
-		wr.writerow(data2)
-		wr.writerow(data3)
-		wr.writerow(data4)
-		wr.writerow(data5)
-		wr.writerow(newLine)
+			wr.writerow(header)
+			#wr.writerow(data1)
+			wr.writerow(data2)
+			wr.writerow(data3)
+			wr.writerow(data4)
+			wr.writerow(data5)
+			wr.writerow(newLine)
 
 	click.echo("******** Finish Point Loma ********")
