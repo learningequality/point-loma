@@ -2,33 +2,21 @@ import click, sh
 
 import json, csv
 from pathlib import Path
+import numbers
 
 @click.command()
-@click.option('--headless', '-hl', default=True, is_flag=True, help='Run in headless mode')
+#@click.option('--headless', '-hl', default=True, is_flag=True, help='Run in headless mode')
 @click.option('--count', default=1, help='Number of tests to run')
-@click.option('--output-file', default='output', help='Name of output file with extension')
-#@click.option('--overwrite', is_flag=True, help='Replace file if it already exists')
+@click.option('--output-file', default='output', help='Name of csv output file without extension')
 @click.argument('link')
 
 def cli(link, count, output_file):
 	"""This script runs Lighthouse using the command line interface."""
-	output = 'output.csv'
+	output = 'output'
 
 	click.echo("******** Start Point Loma ********")
 	click.echo("Running lighthouse on '{0}'".format(link))
-	
-	#chromeHeadless = sh.Command("/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary")
-	#chromeHeadless("--headless", "--remote-debugging-port=9222", "--disable-gpu")
 
-	# if headless:
-	# 	sh.lighthouse(link, "--output-path", "./myfile.json", "output", "html", "--chrome-flags=", "--headless")
-	# else:
-	# 	if verbose:
-	# 		sh.lighthouse(link, "--output-path", "./myfile.json", "output", "json", "--verbose")
-	# 	else:
-	# 		sh.lighthouse(link,  "--output", "json", "--output", "html")
-
-	#sh.lighthouse(link,  "--output", "json", "--output-path=", "./results.json")
 	fmp_avg = 0
 	si_avg = 0
 	eil_avg = 0
@@ -36,25 +24,38 @@ def cli(link, count, output_file):
 
 	for x in range(count):
 		y = x+1
-		click.echo("Running Test #{0}...".format(x+1))
-		
+		click.echo("---Test #{0}---".format(y))
+		click.echo("Running lighthouse...")
+
 		filename = "./results{0}.json".format(y)
-		sh.lighthouse(link, "--output", "json", "--output-path", filename)
+		sh.lighthouse(link, "--output", "json", "--output-path", filename, "--chrome-flags=", "--headless")
+
+		click.echo("Export results for test {0} to csv file...".format(y))
 
 		with open(filename) as json_data:
 			d = json.load(json_data)
 
+			# extract data from json files
 			timestamp = d["generatedTime"]
 			firstMeaningfulPaint = d["audits"]["first-meaningful-paint"]["rawValue"]
 			speedIndex = d["audits"]["speed-index-metric"]["rawValue"]
 			estimatedInputLatency = d["audits"]["estimated-input-latency"]["rawValue"]
 			timeToInteractive = d["audits"]["time-to-interactive"]["rawValue"]
 
-			fmp_avg = fmp_avg + firstMeaningfulPaint
-			si_avg = si_avg + speedIndex
-			eil_avg = eil_avg + estimatedInputLatency
-			tti_avg = tti_avg + timeToInteractive
+			# check for non numeric values before adding to average
+			if [isinstance(firstMeaningfulPaint, numbers.Number)]:
+				fmp_avg = fmp_avg + firstMeaningfulPaint
 
+			if [isinstance(speedIndex, numbers.Number)]:
+				si_avg = si_avg + speedIndex
+
+			if [isinstance(estimatedInputLatency, numbers.Number)]:
+				eil_avg = eil_avg + estimatedInputLatency
+
+			if [isinstance(timeToInteractive, numbers.Number)]:
+				tti_avg = tti_avg + timeToInteractive
+
+			# rows hardcoded for now
 			header = ["********* Test {0} *********".format(y), ""]
 			data1 =	["Timestamp", timestamp]
 			data2 =	["First Meaningful Paint", firstMeaningfulPaint]
@@ -67,6 +68,10 @@ def cli(link, count, output_file):
 			if output_file != output:
 				output = output_file
 
+			# convert to csv file
+			output = output + '.csv'
+
+			# default is to overwrite existing files
 			read_mode = 'w'
 
 			# add data to csv file
