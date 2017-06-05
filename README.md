@@ -5,11 +5,12 @@
 
 ## Requirements
 setup.py should install the Python depencies  
-- sh (Python package)  
-- click (Python package)  
-- pathlib (Python package) 
 
--lighthouse (Node package)  
+- sh (Python package)
+- click (Python package)
+- pathlib (Python package)
+
+- lighthouse (Node package)  
  Installing [Lighthouse]("https://github.com/GoogleChrome/lighthouse")  
 *Lighthouse requires Node 6 or later.*
 
@@ -19,13 +20,18 @@ setup.py should install the Python depencies
     # or use yarn:
     # yarn global add lighthouse
 
-- Chrome Canary  
-Needed for headless mode, which is not yet implemented
+- Chrome Canary - Needed for headless mode, which is not yet implemented
 
 ## Setup
 1. Download Google Chrome for Desktop.
 2. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
 3. Install Lighthouse. See above for quick start instructions or link for more details.
+4. Copy over *setup.py* and *pointloma.py* into the location of your choice. They must be in the same directory.
+5. Install depencies by using the following command:
+    pip install --editable .  
+The *editable* optional allows you to rerun without reinstalling after making changes to the files 
+
+Use **virutalenv** if you would like to test in a clean environment. It was used in testing and building of this script.
 
 ## Usage
 Usage: pointloma [OPTIONS] LINK
@@ -39,8 +45,9 @@ Options:
 	--help           Show this message and exit. 
 
 ## Output
-Each test will output to a json file, *resultsN.report.json*, where *N*, is the test number.
+Each test will output to a json file, *resultsN.report.json*, where *N*, is the test number. 
 Unless specified, a csv file named 'output.csv' will contain four performance metrics and the average of all tests. If the number of tests is one, the average will not be printed.
+All files will be in the directory where the script was run. 
 
 ## Coming Soon
 - Run in chrome headless mode
@@ -48,3 +55,4 @@ Unless specified, a csv file named 'output.csv' will contain four performance me
 - Choose format for full reports (html)
 - Testing multiple links
 - Ignore tests with invalid results
+- Choose alternative location for reports
