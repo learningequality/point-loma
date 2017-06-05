@@ -1,6 +1,10 @@
 import click, sh
 #from Naked.toolshed.shell import execute_js, muterun_js
-#from parselighthouse import parseLighthouse
+#from parselighthouse import parselighthouse
+
+import json, csv
+# import os.path
+from pathlib import Path
 
 @click.command()
 #@click.option('--headless', '-hl', default=True, is_flag=True, 
@@ -11,7 +15,8 @@ import click, sh
 
 def cli(link, count):
 	"""This script runs Lighthouse using the command line interface."""
-	click.echo("Running lighthouse on '{0}' ...".format(link))
+	click.echo("******** Start Point Loma ********")
+	click.echo("Running lighthouse on '{0}'".format(link))
 	
 	#chromeHeadless = sh.Command("/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary")
 	#chromeHeadless("--headless", "--remote-debugging-port=9222", "--disable-gpu")
@@ -27,7 +32,48 @@ def cli(link, count):
 	#sh.lighthouse(link,  "--output", "json", "--output-path=", "./results.json")
 	for x in range(count):
 		y = x+1
-		click.echo("Test #{0}...".format(x+1))
+		click.echo("Running Test #{0}...".format(x+1))
 		
 		filename = "./results{0}.json".format(y)
 		sh.lighthouse(link, "--output", "json", "--output-path", filename)
+
+	click.echo("******** Finish Point Loma ********")
+
+	for x in range(count):
+		y = x + 1
+		filename = "./results{0}.json".format(y)
+
+		with open(filename) as json_data:
+			d = json.load(json_data)
+
+			timestamp = d["generatedTime"]
+			firstMeaningfulPaint = d["audits"]["first-meaningful-paint"]["rawValue"]
+			speedIndex = d["audits"]["speed-index-metric"]["rawValue"]
+			estimatedInputLatency = d["audits"]["estimated-input-latency"]["rawValue"]
+			timeToInteractive = d["audits"]["time-to-interactive"]["rawValue"]
+
+			header = ["********* Test {0} *********".format(y), ""]
+			data1 =	["Timestamp", timestamp]
+			data2 =	["First Meaningful Paint", firstMeaningfulPaint]
+			data3 =	["Speed Index", speedIndex]
+			data4 =	["Estimated Input Latency", estimatedInputLatency]
+			data5 =	["Time to Interactive", timeToInteractive]
+			newLine = ["", ""]
+
+			#output = "./output{0}.csv".format(y)
+			output = Path("output.csv")
+			if output.is_file():
+				read_mode = 'a'
+			else:
+				read_mode = 'w'
+
+			with open("output.csv", read_mode) as csvfile:
+				wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
+				
+				wr.writerow(header)
+				wr.writerow(data1)
+				wr.writerow(data2)
+				wr.writerow(data3)
+				wr.writerow(data4)
+				wr.writerow(data5)
+				wr.writerow(newLine)
