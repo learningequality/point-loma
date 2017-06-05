@@ -1,14 +1,10 @@
 import click, sh
-#from Naked.toolshed.shell import execute_js, muterun_js
-#from parselighthouse import parselighthouse
 
 import json, csv
-# import os.path
 from pathlib import Path
 
 @click.command()
-#@click.option('--headless', '-hl', default=True, is_flag=True, 
-#		help='Run in headless mode')
+@click.option('--headless', '-hl', default=True, is_flag=True, help='Run in headless mode')
 @click.option('--count', default=1, help='Number of tests to run')
 @click.option('--output-file', default='output', help='Name of output file with extension')
 #@click.option('--overwrite', is_flag=True, help='Replace file if it already exists')
@@ -45,12 +41,6 @@ def cli(link, count, output_file):
 		filename = "./results{0}.json".format(y)
 		sh.lighthouse(link, "--output", "json", "--output-path", filename)
 
-	# click.echo("******** Finish Point Loma ********")
-
-	#for x in range(count):
-	#	y = x + 1
-	#	filename = "./results{0}.json".format(y)
-
 		with open(filename) as json_data:
 			d = json.load(json_data)
 
@@ -78,23 +68,10 @@ def cli(link, count, output_file):
 				output = output_file
 
 			read_mode = 'w'
-			# outputPath = Path(output)
-			# if outputPath.is_file():
-			# 	read_mode = 'a'
-			# else:
-			# 	read_mode = 'w'
 
-			# if overwrite:
-			# 	read_mode = 'w'
-			# else:
-			# 	if outputPath.is_file():
-			# 		read_mode = 'a'
-			# 	else:
-			# 		read_mode = 'w'
-
+			# add data to csv file
 			with open(output, read_mode) as csvfile:
 				wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
-				
 				wr.writerow(header)
 				wr.writerow(data1)
 				wr.writerow(data2)
@@ -103,6 +80,8 @@ def cli(link, count, output_file):
 				wr.writerow(data5)
 				wr.writerow(newLine)
 
+
+	# append averages to end of file
 	read_mode = 'a'
 
 	with open(output, read_mode) as csvfile:
