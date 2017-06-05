@@ -77,11 +77,12 @@ def cli(link, count, output_file):
 			if output_file != output:
 				output = output_file
 
-			outputPath = Path(output)
-			if outputPath.is_file():
-				read_mode = 'a'
-			else:
-				read_mode = 'w'
+			read_mode = 'w'
+			# outputPath = Path(output)
+			# if outputPath.is_file():
+			# 	read_mode = 'a'
+			# else:
+			# 	read_mode = 'w'
 
 			# if overwrite:
 			# 	read_mode = 'w'
