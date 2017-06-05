@@ -9,12 +9,15 @@ from pathlib import Path
 @click.command()
 #@click.option('--headless', '-hl', default=True, is_flag=True, 
 #		help='Run in headless mode')
-#@click.option('--verbose', is_flag=True, help='Verbose logging')
 @click.option('--count', default=1, help='Number of tests to run')
+@click.option('--output-file', default='output', help='Name of output file with extension')
+#@click.option('--overwrite', is_flag=True, help='Replace file if it already exists')
 @click.argument('link')
 
-def cli(link, count):
+def cli(link, count, output_file):
 	"""This script runs Lighthouse using the command line interface."""
+	output = 'output.csv'
+
 	click.echo("******** Start Point Loma ********")
 	click.echo("Running lighthouse on '{0}'".format(link))
 	
@@ -30,6 +33,11 @@ def cli(link, count):
 	# 		sh.lighthouse(link,  "--output", "json", "--output", "html")
 
 	#sh.lighthouse(link,  "--output", "json", "--output-path=", "./results.json")
+	fmp_avg = 0
+	si_avg = 0
+	eil_avg = 0
+	tti_avg = 0
+
 	for x in range(count):
 		y = x+1
 		click.echo("Running Test #{0}...".format(x+1))
@@ -37,11 +45,11 @@ def cli(link, count):
 		filename = "./results{0}.json".format(y)
 		sh.lighthouse(link, "--output", "json", "--output-path", filename)
 
-	click.echo("******** Finish Point Loma ********")
+	# click.echo("******** Finish Point Loma ********")
 
-	for x in range(count):
-		y = x + 1
-		filename = "./results{0}.json".format(y)
+	#for x in range(count):
+	#	y = x + 1
+	#	filename = "./results{0}.json".format(y)
 
 		with open(filename) as json_data:
 			d = json.load(json_data)
@@ -52,6 +60,11 @@ def cli(link, count):
 			estimatedInputLatency = d["audits"]["estimated-input-latency"]["rawValue"]
 			timeToInteractive = d["audits"]["time-to-interactive"]["rawValue"]
 
+			fmp_avg = fmp_avg + firstMeaningfulPaint
+			si_avg = si_avg + speedIndex
+			eil_avg = eil_avg + estimatedInputLatency
+			tti_avg = tti_avg + timeToInteractive
+
 			header = ["********* Test {0} *********".format(y), ""]
 			data1 =	["Timestamp", timestamp]
 			data2 =	["First Meaningful Paint", firstMeaningfulPaint]
@@ -60,14 +73,25 @@ def cli(link, count):
 			data5 =	["Time to Interactive", timeToInteractive]
 			newLine = ["", ""]
 
-			#output = "./output{0}.csv".format(y)
-			output = Path("output.csv")
-			if output.is_file():
+			# if output file is specified, set it
+			if output_file != output:
+				output = output_file
+
+			outputPath = Path(output)
+			if outputPath.is_file():
 				read_mode = 'a'
 			else:
 				read_mode = 'w'
 
-			with open("output.csv", read_mode) as csvfile:
+			# if overwrite:
+			# 	read_mode = 'w'
+			# else:
+			# 	if outputPath.is_file():
+			# 		read_mode = 'a'
+			# 	else:
+			# 		read_mode = 'w'
+
+			with open(output, read_mode) as csvfile:
 				wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
 				
 				wr.writerow(header)
@@ -77,3 +101,31 @@ def cli(link, count):
 				wr.writerow(data4)
 				wr.writerow(data5)
 				wr.writerow(newLine)
+
+	read_mode = 'a'
+
+	with open(output, read_mode) as csvfile:
+		wr = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
+		
+		fmp_avg = fmp_avg/count
+		si_avg = si_avg/count
+		eil_avg = eil_avg/count
+		tti_avg = tti_avg/count
+
+		header = ["********* Average {0} Tests *********".format(y), ""]
+		#data1 =	["Timestamp", timestamp]
+		data2 =	["First Meaningful Paint", fmp_avg]
+		data3 =	["Speed Index", si_avg]
+		data4 =	["Estimated Input Latency", eil_avg]
+		data5 =	["Time to Interactive", tti_avg]
+		newLine = ["", ""]
+
+		wr.writerow(header)
+		#wr.writerow(data1)
+		wr.writerow(data2)
+		wr.writerow(data3)
+		wr.writerow(data4)
+		wr.writerow(data5)
+		wr.writerow(newLine)
+
+	click.echo("******** Finish Point Loma ********")
