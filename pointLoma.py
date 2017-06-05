@@ -15,6 +15,14 @@ def cli(link, count, output_file):
 	output = 'output'
 
 	click.echo("******** Start Point Loma ********")
+
+	outputPath = Path(output+'.csv')
+	if outputPath.is_file(): # and output_file != output
+		if (click.confirm('File already exists. Proceeding will overwrite existing file. \nContinue?')) == False:
+			click.echo("******** Quitting Point Loma ********")
+			return;
+
+
 	click.echo("Running lighthouse on '{0}'".format(link))
 
 	fmp_avg = 0
@@ -72,7 +80,10 @@ def cli(link, count, output_file):
 			output = output + '.csv'
 
 			# default is to overwrite existing files
-			read_mode = 'w'
+			if x == 0:
+				read_mode = 'w'
+			else:
+				read_mode = 'a'
 
 			# add data to csv file
 			with open(output, read_mode) as csvfile:
