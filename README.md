@@ -32,7 +32,7 @@
 1. Copy over *setup.py* and *pointloma.py* into a location of your choice. The two files must be in the same directory.
 2. Install all dependencies by using the following command:
 ```
-    python setup.py
+    python setup.py install
 ```
 *Note:* Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
 
