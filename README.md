@@ -10,7 +10,7 @@
 - lighthouse (Node package)   
   *Lighthouse requires Node 6 or later.*
 - Google Chrome
-- Chrome Canary (Only for headless)
+- Chrome Canary (Only needed for headless)
 
 **Installation:**
 - Download setup.py, it is needed to install all three of the Python dependencies
@@ -24,7 +24,7 @@
    *Note:* lighthouse requires Node 6 or later. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
 - Google Chrome
 	Link: https://www.google.com/chrome/browser/desktop/index.html
-- Chrome Canary - Needed for headless mode, which still needs to be implemented for python script.
+- Chrome Canary - Needed for only the headless mode, which still needs to be implemented for the python script.
 	Link: https://www.google.com/chrome/browser/canary.html
 	
 ## Setup
@@ -34,8 +34,8 @@
     pip install --editable .  
 ```
 *Note:* 
-	-The *editable* optional allows you to rerun without reinstalling after making changes to the files 
-	-Use **virutalenv** if you would like to test in a clean environment. It was used in testing and building of this script.
+-The *editable* optional allows you to rerun without reinstalling after making changes to the files.
+-Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
 
 ## Usage
 Usage: pointLoma [OPTIONS] LINK
