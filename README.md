@@ -43,10 +43,19 @@ Usage: pointLoma [OPTIONS] LINK
 
 Options:
 
-    --count INTEGER  Number of tests to run. Default is 1.
-	--output-file TEXT  Name of csv file w/o extension. Default is "output".
+    --count=INTEGER  Number of tests to run. Default is 1.
+	--output-file=TEXT  Name of csv file w/o extension. Default is "output".
 	--help           Show this message and exit. 
 
+Examples:
+To specify the number of tests to run:
+```
+pointLoma --count=3 https://kolibridemo.learningequality.org
+```
+To specity the number of tests to run and the name csv file
+```
+pointLoma --count=3 --output-file=learningEquality https://kolibridemo.learningequality.org
+```
 ## Output
 Each test will output to a json file, *resultsN.report.json*, where *N*, is the test number. 
 Unless specified, a csv file named 'output.csv' will contain four performance metrics and the average of all tests. If the number of tests is one, the average will not be printed.
