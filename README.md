@@ -31,7 +31,7 @@
 1. Copy over *setup.py* and *pointloma.py* into a location of your choice. The two files must be in the same directory.
 2. Install all dependencies by using the following command:
 ```
-    pip install --editable .  
+    python setup.py
 ```
 *Note:* 
 -The *editable* optional allows you to rerun without reinstalling after making changes to the files.
