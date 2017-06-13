@@ -44,7 +44,7 @@ Usage: pointLoma [OPTIONS] LINK
 
 Options:
 
-    	--count INTEGER  Number of tests to run. Default is 1.
+    --count INTEGER  Number of tests to run. Default is 1.
 	--output-file TEXT  Name of csv file w/o extension. Default is "output".
 	--help           Show this message and exit. 
 
