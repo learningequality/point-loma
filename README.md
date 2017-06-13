@@ -12,16 +12,17 @@
 - Google Chrome
 - Chrome Canary (Only needed for headless)
 
-**Installation:**
-- Download setup.py, it is needed to install all three of the Python dependencies
-- Download pointLoma.py, the script to execute lighthouse and also export results
-- Install lighthouse using the following command:
+**Installation:**  
+- Use `git clone` or download the project as a zip from this Github page. There are two file main files inside:  
+	- *setup.py*: used to install the three Python dependencies  
+	- *pointLoma.py*: the main script file, executes lighthouse and exports  results  
+- Install **lighthouse** using the following command:  
 ```
     npm install -g lighthouse
     # or use yarn:
-    # yarn global add lighthouse
-```
-   *Note:* lighthouse requires Node 6 or later. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
+    yarn global add lighthouse
+```  
+   *Note:* lighthouse requires Node 6 or later. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).  
 - Google Chrome
 	Link: https://www.google.com/chrome/browser/desktop/index.html
 - Chrome Canary - Needed for only the headless mode, which still needs to be implemented for the python script.
@@ -33,11 +34,10 @@
 ```
     python setup.py
 ```
-*Note:* 
--Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
+*Note:* Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
 
 ## Usage
-Usage: pointLoma [OPTIONS] LINK
+Usage: `pointLoma [OPTIONS] LINK`
 
   This script runs lighthouse using the command line interface.
 
