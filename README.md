@@ -34,7 +34,6 @@
     python setup.py
 ```
 *Note:* 
--The *editable* optional allows you to rerun without reinstalling after making changes to the files.
 -Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
 
 ## Usage
