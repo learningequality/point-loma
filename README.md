@@ -4,46 +4,58 @@
 **June 6, 2017: ver 0.2**
 
 ## Requirements
-setup.py should install the Python depencies  
-
 - sh (Python package)
 - click (Python package)
 - pathlib (Python package)
-
-- lighthouse (Node package)  
- Installing [Lighthouse]("https://github.com/GoogleChrome/lighthouse")  
-*Lighthouse requires Node 6 or later.*
+- lighthouse (Node package)   
+  *Lighthouse requires Node 6 or later.*
+- Google Chrome
+- Chrome Canary (Only needed for headless)
 
 **Installation:**
-
+- Download setup.py, it is needed to install all three of the Python dependencies
+- Download pointLoma.py, the script to execute lighthouse and also export results
+- Install lighthouse using the following command:
+```
     npm install -g lighthouse
     # or use yarn:
     # yarn global add lighthouse
-
-- Chrome Canary - Needed for headless mode, which is not yet implemented
-
+```
+   *Note:* lighthouse requires Node 6 or later. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
+- Google Chrome
+	Link: https://www.google.com/chrome/browser/desktop/index.html
+- Chrome Canary - Needed for only the headless mode, which still needs to be implemented for the python script.
+	Link: https://www.google.com/chrome/browser/canary.html
+	
 ## Setup
-1. Download Google Chrome for Desktop.
-2. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
-3. Install Lighthouse. See above for quick start instructions or link for more details.
-4. Copy over *setup.py* and *pointloma.py* into the location of your choice. They must be in the same directory.
-5. Install depencies by using the following command:
-    pip install --editable .  
-The *editable* optional allows you to rerun without reinstalling after making changes to the files 
-
-Use **virutalenv** if you would like to test in a clean environment. It was used in testing and building of this script.
+1. Copy over *setup.py* and *pointloma.py* into a location of your choice. The two files must be in the same directory.
+2. Install all dependencies by using the following command:
+```
+    python setup.py
+```
+*Note:* 
+-Use *virutalenv* if you would like to test in a clean environment. It was used in testing and building of this script.
 
 ## Usage
-Usage: pointloma [OPTIONS] LINK
+Usage: pointLoma [OPTIONS] LINK
 
-  This script runs Lighthouse using the command line interface.
+  This script runs lighthouse using the command line interface.
 
 Options:
 
-    --count INTEGER  Number of tests to run. Default is 1.
-	--output-file TEXT  Name of csv file w/o extension. Default is "output".
+    --count=INTEGER  Number of tests to run. Default is 1.
+	--output-file=TEXT  Name of csv file w/o extension. Default is "output".
 	--help           Show this message and exit. 
 
+Examples:
+To specify the number of tests to run:
+```
+pointLoma --count=3 https://kolibridemo.learningequality.org
+```
+To specity the number of tests to run and the name csv file
+```
+pointLoma --count=3 --output-file=learningEquality https://kolibridemo.learningequality.org
+```
 ## Output
 Each test will output to a json file, *resultsN.report.json*, where *N*, is the test number. 
 Unless specified, a csv file named 'output.csv' will contain four performance metrics and the average of all tests. If the number of tests is one, the average will not be printed.
