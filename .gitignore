@@ -13,3 +13,5 @@ shtest.py
 venv/
 venvsh/
 yarn.lock
+dist/
+build/
