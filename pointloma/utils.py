@@ -13,14 +13,12 @@ def parse_cli_opts():
                   'different Kolibri URLs'
 
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('url', help='Url to test against')
-    parser.add_argument('-hl', '--headless', help='Run in headless mode',
-                        required=False, default=True)
-    parser.add_argument('-r', '--runs', help='Number of test runs',
+    parser.add_argument('url', help='url to test against')
+    parser.add_argument('-r', '--runs', help='number of test runs',
                         required=False, default=1, type=int)
-    parser.add_argument('-o', '--output-path', help='Path to csv file output',
+    parser.add_argument('-o', '--output-path', help='path to csv file output',
                         required=False)
-    parser.add_argument('-v', '--verbose', help='Increase output verbosity',
+    parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
     return parser.parse_args()
 

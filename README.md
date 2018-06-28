@@ -1,12 +1,12 @@
 
 
 # Point Loma
-*A Python script to execute Lighthouse and export results of running performance tests against different URLs on different releases.Aims to track code quality and improve user experience.*
+*A Python library to execute [Lighthouse](https://developers.google.com/web/tools/lighthouse/) audits and export results of the running performance tests against different URL's. Aims to track code quality and improve user experience.*
 
 ## Requirements
 - Python 3 (not compatible with Python 2 at the moment)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse/)
-- [Google Chrome](https://www.google.com/chrome/browser/desktop/)
+- [Google Chrome](https://www.google.com/chrome/browser/desktop/) (>= Chrome 59 for headless support)
 
 ## Installation
 - Clone the repository or download the project as a zip file from this Github page
@@ -38,26 +38,24 @@ You could run:
 ```python3 pointloma [url]```
 
 ## Usage
-Usage: `python pointloma [OPTIONS] url`
+```python pointloma [-h] [-r RUNS] [-o OUTPUT_PATH] [-v] url```
 
-Options:
+### Options
 
 ```
 positional arguments:
-  url                   Url to test against
+  url                   url to test against
 
 optional arguments:
   -h, --help            show this help message and exit
-  -hl HEADLESS, --headless HEADLESS
-                        Run in headless mode
-  -r RUNS, --runs RUNS  Number of test runs
+  -r RUNS, --runs RUNS  number of test runs
   -o OUTPUT_PATH, --output-path OUTPUT_PATH
-                        Path to csv file output
-  -v, --verbose         Increase output verbosity
-
+                        path to csv file output
+  -v, --verbose         increase output verbosity
 ```
 
-Examples:
+### Examples
+
 To specify the number of tests to run:
 ```
 python pointloma -r 3 https://kolibridemo.learningequality.org
@@ -66,8 +64,23 @@ To specity the number of tests to run and the name of the csv file output
 ```
 python pointloma -r 3 --output-path /tmp/example.csv http://localhost:8000/learn
 ```
-## Output
-TBD
+To run the test a single time with verbose logging output:
+```
+python pointloma -v https://kolibridemo.learningequality.org
+```
 
-## Coming Soon
-TBD
+## Output
+### Format
+Resulting output is a comma delimited csv file with the following columns:
+- Timestamp
+- First Meaningful Paint [ms]
+- First Interactive [ms]
+- Consistently Interactive [ms]
+- Speed Index [ms]
+- Estimated Input Latency [ms]
+
+## Next steps
+- Automatically generate graphs from the resulting csv
+- Test multiple URL's by specifying file with the URL's listed
+- Test URL's which require authentication
+- Integrate with Health Inspector ([https://github.com/learningequality/auto-screenshots](https://github.com/learningequality/auto-screenshots))
