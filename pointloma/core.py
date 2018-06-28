@@ -61,7 +61,8 @@ class PointLoma:
             self._run_cmd(cmd)
 
             # Extract results data
-            self._log('info', 'Getting results for test #{run}'.format(run=r))
+            self._log('info',
+                      'Getting results for test #{run}'.format(run=r + 1))
             write_header = self._should_write_header(run=r)
             self._extract_results(results_path=results_path,
                                   output_path=output_path,
