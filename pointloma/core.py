@@ -158,7 +158,7 @@ class PointLoma:
                 os.makedirs(directory)
 
             ts = dt.now().strftime('%Y_%m_%d__%H_%M_%S__%f')
-            filename = 'output_{ts}.csv'.format(ts=ts)
+            filename = 'results_{ts}.csv'.format(ts=ts)
 
             return os.path.join(directory, filename)
 

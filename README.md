@@ -1,5 +1,4 @@
 
-
 # Point Loma
 *A Python library to execute [Lighthouse](https://developers.google.com/web/tools/lighthouse/) audits and export results of the running performance tests against different URL's. Aims to track code quality and improve user experience.*
 
@@ -78,6 +77,18 @@ Resulting output is a comma delimited csv file with the following columns:
 - Consistently Interactive [ms]
 - Speed Index [ms]
 - Estimated Input Latency [ms]
+
+### Location
+The csv file with the results will be written to one of the two following locations:
+- path specified by `-o` or `--output-path` CLI arguments
+- to the `output` directory under the the `pointloma` codebase root directory, e.g.:
+    - `output/results_1987_08_20__11_22_33__123456.csv`
+
+### Appending to the output
+The same output path can be used for multiple test runs (by using the `-o` or `--output-path` CLI options) as the results will simply be appended to the specified csv file.
+
+This approach can be useful when testing a single URL with different code states or repository branches and wanting to gather the results in a single csv file for easier processing.
+
 
 ## Next steps
 - Automatically generate graphs from the resulting csv
