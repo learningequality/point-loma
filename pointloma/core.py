@@ -124,12 +124,17 @@ class PointLoma:
         """
         Returns list of command line arguments needed to run a Lighthouse test
         """
-        return ['lighthouse',
-                url,
-                '--output', 'json',
-                '--output-path', results_path,
-                '--perf',
-                '--chrome-flags="--headless"']
+        cmd = ['lighthouse',
+               url,
+               '--output', 'json',
+               '--output-path', results_path,
+               '--perf',
+               '--chrome-flags="--headless"']
+
+        if not self.opts.verbose:
+            cmd.append('--quiet')
+
+        return cmd
 
     def _get_lighthouse_results_path(self, run):
         """
