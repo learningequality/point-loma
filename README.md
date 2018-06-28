@@ -1,74 +1,86 @@
-# Point Loma
-*A Python script to execute Lighthouse and export results of running performance tests against different URLs on different releases.Aims to track code quality and improve user experience.*
 
-**December 8, 2017**
+
+# Point Loma
+*A Python library to execute [Lighthouse](https://developers.google.com/web/tools/lighthouse/) audits and export results of the running performance tests against different URL's. Aims to track code quality and improve user experience.*
 
 ## Requirements
-- sh (Python package)
-- click (Python package)
-- pathlib (Python package)
-- lighthouse (Node package)
-- shutil (Python packaage)
-  *Lighthouse requires Node 6 or later.*
-- Google Chrome
-- Chrome Canary (Only needed for headless)
+- Python 3 (not compatible with Python 2 at the moment)
+- [Lighthouse](https://developers.google.com/web/tools/lighthouse/)
+- [Google Chrome](https://www.google.com/chrome/browser/desktop/) (>= Chrome 59 for headless support)
 
-**Installation:**
-- Use `git clone` or download the project as a zip from this Github page. There are two file main files inside:
-	- *setup.py*: used to install the three Python dependencies
-	- *pointLoma.py*: the main script file, executes lighthouse and exports  results
-- Install **lighthouse** using the following command:
+## Installation
+- Clone the repository or download the project as a zip file from this Github page
+- Install Lighthouse as a Node command line tool:
 ```
     npm install -g lighthouse
     # or use yarn:
     yarn global add lighthouse
 ```
-   *Note:* lighthouse requires Node 6 or later. Install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
-- Google Chrome
-	Link: https://www.google.com/chrome/browser/desktop/index.html
-- Chrome Canary - Needed for only the headless mode, which still needs to be implemented for the python script.
-	Link: https://www.google.com/chrome/browser/canary.html
-- Download pex zip file:
-	Link: https://drive.google.com/file/d/1FCBzRDr-17R8WMEirOlTdLu2bZUWf9Rx/view?usp=sharing
-	Unzip the zip file in pointLoma directory
-	Note: May need execute permission, use chmod +x file_name to add execute permission
-- Download .kolibri zip file:
-	Link: https://drive.google.com/file/d/1YMKA1b8H4kEo02_iYZcFIus27wtm8-hO/view?usp=sharing
-	Unzip the zip file in pointLoma directory
-## Setup
-1. Copy over *setup.py* and *pointloma.py* into a location of your choice. The two files must be in the same directory.
-2. Install all dependencies by using the following command:
-```
-    python setup.py install
-```
-*Note:* Use *virtualenv* if you would like to test in a clean environment. It was used in testing and building of this script.
+*Note:* Lighthouse requires Node 6 or later. It is [recommended](https://developers.google.com/web/tools/lighthouse/#cli) to install the current [Long-Term Support](https://github.com/nodejs/LTS) version of [Node](https://nodejs.org/).
+
+## Setup (optional)
+### Virtualenv
+Create `virtualenv` to target the Python 3 interpreter, e.g.:
+
+- `python3.6 -m venv ~/.venvs/pointloma3.6`
+- `source ~/.venvs/pointloma3.6/bin/activate`
+
+### Why is this step optional?
+
+There are currently no requirements outside of the Python's standard library, so `pointloma` will work perfectly fine simply by substituing all calls to the `python` interpreter by directly targeting `python3` interpreter, e.g.:
+
+Instead of running:
+
+```python pointloma [url]```
+
+You could run:
+
+```python3 pointloma [url]```
 
 ## Usage
-Usage: `pointLoma [OPTIONS] LINK`
+```python pointloma [-h] [-r RUNS] [-o OUTPUT_PATH] [-v] url```
 
-  This script runs lighthouse using the command line interface.
+### Options
 
-Options:
+```
+positional arguments:
+  url                   url to test against
 
-    --count=INTEGER  Number of tests to run. Default is 1.
-	--output-file=TEXT  Name of csv file w/o extension. Default is "output".
-	--help           Show this message and exit.
+optional arguments:
+  -h, --help            show this help message and exit
+  -r RUNS, --runs RUNS  number of test runs
+  -o OUTPUT_PATH, --output-path OUTPUT_PATH
+                        path to csv file output
+  -v, --verbose         increase output verbosity
+```
 
-Examples:
+### Examples
+
 To specify the number of tests to run:
 ```
-pointLoma --count=3 https://kolibridemo.learningequality.org
+python pointloma -r 3 https://kolibridemo.learningequality.org
 ```
-To specity the number of tests to run and the name csv file
+To specity the number of tests to run and the name of the csv file output
 ```
-pointLoma --count=3 --output-file=learningEquality https://kolibridemo.learningequality.org
+python pointloma -r 3 --output-path /tmp/example.csv http://localhost:8000/learn
 ```
-## Output
-Each test will output to a json file, *resultsN.report.json*, where *N*, is the test number.
-Unless specified, a csv file named 'output.csv' will contain the timestamp, the performance metrics, and the version we are testing.
-All files will be in the directory where the script was run.
+To run the test a single time with verbose logging output:
+```
+python pointloma -v https://kolibridemo.learningequality.org
+```
 
-## Coming Soon
-- Testing multiple links automatically without using command line argument by using dictionary
-- Automatically login for headless mode
-- Integrate with Health Inspector (https://github.com/learningequality/auto-screenshots)
+## Output
+### Format
+Resulting output is a comma delimited csv file with the following columns:
+- Timestamp
+- First Meaningful Paint [ms]
+- First Interactive [ms]
+- Consistently Interactive [ms]
+- Speed Index [ms]
+- Estimated Input Latency [ms]
+
+## Next steps
+- Automatically generate graphs from the resulting csv
+- Test multiple URL's by specifying file with the URL's listed
+- Test URL's which require authentication
+- Integrate with Health Inspector ([https://github.com/learningequality/auto-screenshots](https://github.com/learningequality/auto-screenshots))
