@@ -20,6 +20,9 @@ def parse_cli_opts():
                         required=False)
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
+    parser.add_argument('-a', '--auth-module',
+                        help='authentication module to use',
+                        required=False)
     return parser.parse_args()
 
 

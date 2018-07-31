@@ -8,14 +8,18 @@ import sys
 import tempfile
 
 from datetime import datetime as dt
+from importlib import import_module
 
 import utils
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
 class PointLoma:
+    AUTH_MODULES_DIR = os.path.join('pointloma', 'auth')
+
     def __init__(self):
         """
         Simple flow based call order: Prepare to run -> Run -> Clean
@@ -35,6 +39,11 @@ class PointLoma:
         self.opts = utils.parse_cli_opts()
         self.logger = logging.getLogger('pointloma')
         self.workdir = self._create_workdir()
+
+        # If authentication was requested at runtime, try to authenticate
+        if self.opts.auth_module:
+            self.authenticated, self.headers = self._authenticate(
+                auth_module=self.opts.auth_module)
 
     def run(self):
         """
@@ -112,6 +121,25 @@ class PointLoma:
         self._log('info', 'Deleting temp directory: {dir}'.format(
             dir=self.workdir))
         shutil.rmtree(self.workdir)
+
+    def _authenticate(self, auth_module):
+        sys.path.append(os.path.join(os.getcwd(), self.AUTH_MODULES_DIR))
+        auth = import_module(auth_module)
+
+        username = os.environ.get('POINTLOMA_USERNAME')
+        password = os.environ.get('POINTLOMA_PASSWORD')
+
+        if not username or not password:
+            raise ValueError('Username and password are required.')
+
+        try:
+            headers = auth.get_headers(self.opts.url, username, password)
+            if headers:
+                return True, headers
+        except ImportError:
+            pass
+
+        return False, None
 
     def _run_cmd(self, cmd):
         """
