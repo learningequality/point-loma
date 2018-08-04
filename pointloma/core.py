@@ -9,6 +9,7 @@ import tempfile
 
 from datetime import datetime as dt
 from importlib import import_module
+from urllib.parse import urlparse
 
 import utils
 
@@ -19,6 +20,7 @@ logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 class PointLoma:
     AUTH_MODULES_DIR = os.path.join('pointloma', 'auth')
+    HEADERS_FILE_PATH = os.path.join(AUTH_MODULES_DIR, 'headers.json')
 
     def __init__(self):
         """
@@ -41,9 +43,9 @@ class PointLoma:
         self.workdir = self._create_workdir()
 
         # If authentication was requested at runtime, try to authenticate
+        self.is_authenticated = False
         if self.opts.auth_module:
-            self.authenticated, self.headers = self._authenticate(
-                auth_module=self.opts.auth_module)
+            self.is_authenticated = self._authenticate(self.opts.auth_module)
 
     def run(self):
         """
@@ -123,23 +125,33 @@ class PointLoma:
         shutil.rmtree(self.workdir)
 
     def _authenticate(self, auth_module):
-        sys.path.append(os.path.join(os.getcwd(), self.AUTH_MODULES_DIR))
-        auth = import_module(auth_module)
-
+        """
+        Attempts to retrieve the authentication credentials for the user you
+        you wish to use to perform the audits with
+        """
         username = os.environ.get('POINTLOMA_USERNAME')
         password = os.environ.get('POINTLOMA_PASSWORD')
 
         if not username or not password:
             raise ValueError('Username and password are required.')
 
+        sys.path.append(os.path.join(os.getcwd(), self.AUTH_MODULES_DIR))
         try:
-            headers = auth.get_headers(self.opts.url, username, password)
-            if headers:
-                return True, headers
+            auth = import_module(auth_module)
         except ImportError:
             pass
 
-        return False, None
+        return auth.write_headers_file(username, password,
+                                       base_url=self._get_base_url(),
+                                       file_path=self.HEADERS_FILE_PATH)
+
+    def _get_base_url(self):
+        """
+        Return base url given the full url to perform the tests on
+        """
+        parse_result = urlparse(self.opts.url)
+        return '{scheme}://{netloc}'.format(scheme=parse_result.scheme,
+                                            netloc=parse_result.netloc)
 
     def _run_cmd(self, cmd):
         """
@@ -159,8 +171,17 @@ class PointLoma:
                '--perf',
                '--chrome-flags="--headless"']
 
+        # Set verbosity
         if not self.opts.verbose:
             cmd.append('--quiet')
+
+        # Set extra headers if necessary
+        if self.is_authenticated:
+            cmd.append('--extra-headers={path}'.format(
+                path=self.HEADERS_FILE_PATH))
+
+        self._log('info', 'Running Lighthouse cmd: {cmd}'.format(
+            cmd=' '.join(cmd)))
 
         return cmd
 
