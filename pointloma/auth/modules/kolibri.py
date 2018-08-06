@@ -2,9 +2,9 @@
 Custom Point Loma authentication module for Kolibri project
 https://github.com/learningequality/kolibri
 
-This module is required to have a `get_headers` function which creates
-a json file to the `auth` directory containing HTTP headers required to run
-Point Loma audits simulating an authenticated user you wish to test with
+This module is required to have a `get_headers` function which should simply
+return a dictionary containing the HTTP headers of the authenticated user
+you wish to run the Point Loma audits with
 """
 
 import requests
