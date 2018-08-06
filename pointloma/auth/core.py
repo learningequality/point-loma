@@ -25,7 +25,7 @@ def authenticate(auth_module, base_url):
     try:
         auth = import_module(auth_module)
     except ImportError:
-        pass
+        raise ValueError('Auth module not found. Check your spelling.')
 
     headers = auth.get_headers(username, password, base_url=base_url)
     if not headers:
