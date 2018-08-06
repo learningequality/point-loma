@@ -2,15 +2,15 @@
 Custom Point Loma authentication module for Kolibri project
 https://github.com/learningequality/kolibri
 
-This module is required to have a `write_headers_file` function which creates
+This module is required to have a `get_headers` function which creates
 a json file to the `auth` directory containing HTTP headers required to run
 Point Loma audits simulating an authenticated user you wish to test with
 """
-import json
+
 import requests
 
 
-def write_headers_file(username, password, base_url, file_path):
+def get_headers(username, password, base_url):
     # Prepare dictionary with username and password fields
     data = {'username': username, 'password': password}
 
@@ -40,15 +40,9 @@ def write_headers_file(username, password, base_url, file_path):
                       data=data, headers=login_headers)
 
     # Finally, generate the dict with headers of a logged in user
-    headers = {
+    return {
         'X-CSRFToken': r.cookies['csrftoken'],
         'Cookie': '{session_key}={session_id}; csrftoken={csrf_token}'.format(
             session_key=session_key,
             session_id=r.cookies[session_key],
             csrf_token=r.cookies['csrftoken'])}
-
-    with open(file_path, 'w') as file:
-        json.dump(headers, file)
-        return True
-
-    return False

@@ -1,6 +1,7 @@
 import argparse
 
 from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 
@@ -38,3 +39,12 @@ def check_url(url):
         return False  # URL not well formatted
     except URLError:
         return False  # URL doesn't seem to be reachable
+
+
+def get_base_url(url):
+    """
+    Return base URL (shcheme and netloc) given the full URL
+    """
+    parse_result = urlparse(url)
+    return '{scheme}://{netloc}'.format(scheme=parse_result.scheme,
+                                        netloc=parse_result.netloc)

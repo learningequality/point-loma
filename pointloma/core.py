@@ -8,10 +8,9 @@ import sys
 import tempfile
 
 from datetime import datetime as dt
-from importlib import import_module
-from urllib.parse import urlparse
 
-import utils
+from auth.core import authenticate
+from utils import parse_cli_opts, check_url, get_base_url
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -38,14 +37,15 @@ class PointLoma:
         """
         Prepares environment and information we will need to run the tests
         """
-        self.opts = utils.parse_cli_opts()
+        self.opts = parse_cli_opts()
         self.logger = logging.getLogger('pointloma')
         self.workdir = self._create_workdir()
 
         # If authentication was requested at runtime, try to authenticate
-        self.is_authenticated = False
-        if self.opts.auth_module:
-            self.is_authenticated = self._authenticate(self.opts.auth_module)
+        self.headers_file_path = authenticate(
+            auth_module=self.opts.auth_module,
+            base_url=get_base_url(self.opts.url))
+        self.is_authenticated = True if self.headers_file_path else False
 
     def run(self):
         """
@@ -57,7 +57,7 @@ class PointLoma:
         output_path = self._get_output_path()
 
         # Check if we have a live URL
-        if not utils.check_url(url):
+        if not check_url(url):
             self._log('error', 'No response from url {url}'.format(url=url))
             return
 
@@ -124,35 +124,6 @@ class PointLoma:
             dir=self.workdir))
         shutil.rmtree(self.workdir)
 
-    def _authenticate(self, auth_module):
-        """
-        Attempts to retrieve the authentication credentials for the user you
-        you wish to use to perform the audits with
-        """
-        username = os.environ.get('POINTLOMA_USERNAME')
-        password = os.environ.get('POINTLOMA_PASSWORD')
-
-        if not username or not password:
-            raise ValueError('Username and password are required.')
-
-        sys.path.append(os.path.join(os.getcwd(), self.AUTH_MODULES_DIR))
-        try:
-            auth = import_module(auth_module)
-        except ImportError:
-            pass
-
-        return auth.write_headers_file(username, password,
-                                       base_url=self._get_base_url(),
-                                       file_path=self.HEADERS_FILE_PATH)
-
-    def _get_base_url(self):
-        """
-        Return base url given the full url to perform the tests on
-        """
-        parse_result = urlparse(self.opts.url)
-        return '{scheme}://{netloc}'.format(scheme=parse_result.scheme,
-                                            netloc=parse_result.netloc)
-
     def _run_cmd(self, cmd):
         """
         Runs the specified subprocess command synchronously, i.e. waits for it
@@ -178,7 +149,7 @@ class PointLoma:
         # Set extra headers if necessary
         if self.is_authenticated:
             cmd.append('--extra-headers={path}'.format(
-                path=self.HEADERS_FILE_PATH))
+                path=self.headers_file_path))
 
         self._log('info', 'Running Lighthouse cmd: {cmd}'.format(
             cmd=' '.join(cmd)))
