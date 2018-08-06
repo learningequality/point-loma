@@ -9,13 +9,18 @@ import tempfile
 
 from datetime import datetime as dt
 
-import utils
+from auth.core import authenticate
+from utils import parse_cli_opts, check_url, get_base_url
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
 class PointLoma:
+    AUTH_MODULES_DIR = os.path.join('pointloma', 'auth')
+    HEADERS_FILE_PATH = os.path.join(AUTH_MODULES_DIR, 'headers.json')
+
     def __init__(self):
         """
         Simple flow based call order: Prepare to run -> Run -> Clean
@@ -32,9 +37,15 @@ class PointLoma:
         """
         Prepares environment and information we will need to run the tests
         """
-        self.opts = utils.parse_cli_opts()
+        self.opts = parse_cli_opts()
         self.logger = logging.getLogger('pointloma')
         self.workdir = self._create_workdir()
+
+        # If authentication was requested at runtime, try to authenticate
+        self.headers_file_path = authenticate(
+            auth_module=self.opts.auth_module,
+            base_url=get_base_url(self.opts.url))
+        self.is_authenticated = True if self.headers_file_path else False
 
     def run(self):
         """
@@ -46,7 +57,7 @@ class PointLoma:
         output_path = self._get_output_path()
 
         # Check if we have a live URL
-        if not utils.check_url(url):
+        if not check_url(url):
             self._log('error', 'No response from url {url}'.format(url=url))
             return
 
@@ -131,8 +142,17 @@ class PointLoma:
                '--perf',
                '--chrome-flags="--headless"']
 
+        # Set verbosity
         if not self.opts.verbose:
             cmd.append('--quiet')
+
+        # Set extra headers if necessary
+        if self.is_authenticated:
+            cmd.append('--extra-headers={path}'.format(
+                path=self.headers_file_path))
+
+        self._log('info', 'Running Lighthouse cmd: {cmd}'.format(
+            cmd=' '.join(cmd)))
 
         return cmd
 

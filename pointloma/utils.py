@@ -1,6 +1,7 @@
 import argparse
 
 from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 
@@ -20,6 +21,9 @@ def parse_cli_opts():
                         required=False)
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
+    parser.add_argument('-a', '--auth-module',
+                        help='authentication module to use',
+                        required=False)
     return parser.parse_args()
 
 
@@ -35,3 +39,12 @@ def check_url(url):
         return False  # URL not well formatted
     except URLError:
         return False  # URL doesn't seem to be reachable
+
+
+def get_base_url(url):
+    """
+    Return base URL (shcheme and netloc) given the full URL
+    """
+    parse_result = urlparse(url)
+    return '{scheme}://{netloc}'.format(scheme=parse_result.scheme,
+                                        netloc=parse_result.netloc)
